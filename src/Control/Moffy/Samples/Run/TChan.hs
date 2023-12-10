@@ -1,3 +1,4 @@
+{-# LANGUAGE BlockArguments #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module Control.Moffy.Samples.Run.TChan where
@@ -9,10 +10,18 @@ import Control.Concurrent.STM
 
 import qualified Control.Moffy.Run as M
 
-interpret :: (Monad m, MonadIO m, Adjustable es es') =>
+import Data.Map
+
+interpret :: (MonadIO m, Adjustable es es') =>
 	Handle m es' -> TChan a -> Sig s es a r -> m r
 interpret h c = M.interpret h (liftIO . atomically . writeTChan c)
 
-interpretSt :: (Monad m, MonadIO m, Adjustable es es') =>
+interpretSt :: (MonadIO m, Adjustable es es') =>
 	HandleSt st m es' -> TChan a -> Sig s es a r -> St st m r
 interpretSt h c = M.interpretSt h (liftIO . atomically . writeTChan c)
+
+interpretSt' :: (MonadIO m, Adjustable es es', Ord k) =>
+	HandleSt st m es' -> TVar (Map k v) -> TChan a -> Sig s es ((k, v), a) r -> St st m r
+interpretSt' h vm c = M.interpretSt h \((k, v), x) -> liftIO $ atomically do
+	modifyTVar vm $ insert k v
+	writeTChan c x
