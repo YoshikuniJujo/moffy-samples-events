@@ -21,7 +21,7 @@ interpretSt :: (MonadIO m, Adjustable es es') =>
 interpretSt h c = M.interpretSt h (liftIO . atomically . writeTChan c)
 
 interpretSt' :: (MonadIO m, Adjustable es es', Ord k) =>
-	HandleSt st m es' -> TVar (Map k v) -> TChan a -> Sig s es ((k, v), a) r -> St st m r
-interpretSt' h vm c = M.interpretSt h \((k, v), x) -> liftIO $ atomically do
-	modifyTVar vm $ insert k v
+	HandleSt st m es' -> TVar (Map k v) -> TChan a -> Sig s es ([(k, v)], a) r -> St st m r
+interpretSt' h vm c = M.interpretSt h \(kvs, x) -> liftIO $ atomically do
+	modifyTVar vm $ flip (Prelude.foldr (uncurry insert)) kvs
 	writeTChan c x
