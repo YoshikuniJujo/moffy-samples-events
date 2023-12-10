@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           moffy-samples-events
-version:        0.2.2.0
+version:        0.2.2.1
 synopsis:       Events for sample codes of moffy
 description:    Please see the README on GitHub at <https://github.com/YoshikuniJujo/moffy-samples-events#readme>
 category:       Control
