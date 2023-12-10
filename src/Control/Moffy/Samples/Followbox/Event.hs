@@ -46,6 +46,8 @@ import qualified Data.ByteString.Lazy as LBS
 
 import Control.Moffy.Samples.Followbox.TypeSynonym (Uri, ErrorMessage)
 
+import Control.Moffy.Samples.Event.Area
+
 ---------------------------------------------------------------------------
 
 -- * STORE AND LOAD JSON OBJECT LIST
@@ -176,7 +178,8 @@ checkTerminate = catchError
 type SigF s = Sig s FollowboxEv
 type ReactF s r = React s FollowboxEv r
 
-type FollowboxEv = GetThreadId :- LockEv :+: RandomEv :+: DeleteEvent :- MouseEv :+:
+type FollowboxEv = SetArea :- GetArea :-
+	GetThreadId :- LockEv :+: RandomEv :+: DeleteEvent :- MouseEv :+:
 	StoreJsons :- LoadJsons :- HttpGet :- CalcTextExtents :- GetTimeZone :-
 	Browse :- BeginSleep :- EndSleep :- RaiseError :- 'Nil
 

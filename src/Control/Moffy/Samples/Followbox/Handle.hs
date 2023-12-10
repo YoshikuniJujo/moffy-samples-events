@@ -44,6 +44,11 @@ import Control.Moffy.Samples.Followbox.TypeSynonym (Browser, GithubNameToken)
 
 import Data.OneOrMoreApp as Ooma
 
+import Control.Concurrent.STM
+import Control.Moffy.Samples.Handle.Area qualified as A
+import Control.Moffy.Samples.Event.Area qualified as A
+import Data.Map (Map)
+
 ---------------------------------------------------------------------------
 
 -- * STATE
@@ -101,9 +106,10 @@ instance RandomState FollowboxState where
 
 handleFollowboxWith ::
 	(Maybe DiffTime -> f -> Handle' IO (CalcTextExtents :- GuiEv)) ->
-	f -> Browser -> Maybe GithubNameToken ->
+	f -> TVar (Map Int (A.Point, A.Point)) -> Browser -> Maybe GithubNameToken ->
 	HandleF IO (GuiEv :+: FollowboxEv)
-handleFollowboxWith h f brws mba = retrySt $
+handleFollowboxWith h f va brws mba = retrySt $
+	liftHandle' (A.handle va) `mergeSt`
 	liftHandle' handleGetThreadId `mergeSt` handleLock `mergeSt`
 	handleRandom `mergeSt`
 	handleStoreJsons `mergeSt` handleLoadJsons `mergeSt`
