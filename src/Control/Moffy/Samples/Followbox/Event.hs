@@ -4,6 +4,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE DataKinds, TypeOperators #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs -fno-warn-orphans #-}
 
 module Control.Moffy.Samples.Followbox.Event (
@@ -27,6 +28,9 @@ module Control.Moffy.Samples.Followbox.Event (
 	-- * Raise Error
 	RaiseError(..), pattern OccRaiseError, Error(..), ErrorResult(..),
 	raiseError, checkTerminate ) where
+
+import GHC.Generics (Generic)
+import Control.DeepSeq
 
 import Control.Moffy (Sig, React, Request(..), await)
 import Control.Moffy.Event.ThreadId (GetThreadId)
@@ -151,7 +155,9 @@ endSleep = await EndSleepReq \OccEndSleep -> ()
 data Error
 	= NoRateLimitRemaining | NoRateLimitReset
 	| NotJson | EmptyJson | NoLoginName | NoAvatarAddress | NoAvatar
-	| NoHtmlUrl | Trace | CatchError deriving (Show, Eq, Ord)
+	| NoHtmlUrl | Trace | CatchError deriving (Show, Eq, Ord, Generic)
+
+instance NFData Error
 
 data ErrorResult = Continue | Terminate deriving Show
 

@@ -1,5 +1,5 @@
 name:                moffy-samples-events
-version:             0.2.2.1
+version:             0.2.2.2
 github:              "YoshikuniJujo/moffy-samples-events"
 license:             BSD-3-Clause
 author:              "Yoshikuni Jujo"
@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/Yosh
 
 dependencies:
 - base >= 4.7 && < 5
+- deepseq
 - stm
 - process
 - bytestring
