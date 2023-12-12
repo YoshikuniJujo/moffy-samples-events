@@ -22,4 +22,4 @@ handleSetArea vm (Oom.Singleton (SetAreaReq i ul dr)) = do
 
 handleGetArea :: TVar (M.Map Int (Point, Point)) -> Handle' IO (Singleton GetArea)
 handleGetArea vm (Oom.Singleton (GetAreaReq i)) = do
-	Just . App.Singleton . uncurry (OccGetArea i) <$> atomically ((M.! i) <$> readTVar vm)
+	(App.Singleton . uncurry (OccGetArea i) <$>) <$> atomically ((M.lookup i) <$> readTVar vm)
