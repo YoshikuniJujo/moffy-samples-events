@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE BlockArguments, LambdaCase #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module Control.Moffy.Samples.Run.TChan where
@@ -21,7 +21,10 @@ interpretSt :: (MonadIO m, Adjustable es es') =>
 interpretSt h c = M.interpretSt h (liftIO . atomically . writeTChan c)
 
 interpretSt' :: (MonadIO m, Adjustable es es', Ord k) =>
-	HandleSt st m es' -> TVar (Map k v) -> TChan a -> Sig s es ([(k, v)], a) r -> St st m r
+	HandleSt st m es' -> TVar (Map k v) -> TChan a -> Sig s es ([(k, Maybe v)], a) r -> St st m r
 interpretSt' h vm c = M.interpretSt h \(kvs, x) -> liftIO $ atomically do
-	modifyTVar vm $ flip (Prelude.foldr (uncurry insert)) kvs
+	modifyTVar vm $ flip (Prelude.foldr (uncurry maybeInsert)) kvs
 	writeTChan c x
+
+maybeInsert :: Ord k => k -> Maybe a -> Map k a -> Map k a
+maybeInsert k = \case Nothing -> delete k; Just v -> insert k v
